@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>
+            <h1>{{ message|safe }}</h1>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h1>Login account</h1>
+        <form method="post">
+        {{ login_form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Login"></p>
+        </form>
+{% endblock %}

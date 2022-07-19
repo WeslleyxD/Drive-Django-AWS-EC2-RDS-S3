@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h1>Deseja excluir o arquivo {{item}} ?</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <p><input type="submit" value="Excluir"></p>
+</form>
+
+{% endblock %}
+

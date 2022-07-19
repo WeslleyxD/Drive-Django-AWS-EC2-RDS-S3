@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+  <h1>OLÁ, {{request.user}}</h1>
+  <h2> {{percent_storage}}MB de 25MB </h2>
+  <h2><progress max="100" value="{{percent_storage}}"></progress></h2>
+  
+
+  {% if messages %}
+  <ul>
+      {% for message in messages %}
+      <li>
+          <h1>{{ message|safe }}</h1>
+      </li>
+      {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if all_items %}
+
+    <h3>Arquivos:</h3>
+    {% for item in all_items %}
+    <li style="display: flex;">{{ item }}
+      <div style="margin: 0 20px;"><a href="{% url 'drive:delete_item' item %}"> Excluir </a></div>
+      <div><a href="{% url 'drive:download_item' item %}"> Download </a></div>
+    </li> 
+    {% endfor %}
+
+
+  {% else %}
+
+    <h2>Nenhum item no drive</h2>
+      
+  {% endif %}
+{% endblock %}
+
