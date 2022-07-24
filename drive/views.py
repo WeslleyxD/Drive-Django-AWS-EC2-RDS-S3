@@ -5,29 +5,30 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from s3.login import login_aws
-from s3.requests import download_item_user, list_all_items_by_user, delete_item_user, validate_limit_storage, storage
+from s3.requests import download_item_user, delete_item_user, validate_limit_storage, upload_file
+
 
 # Create your views here.
 def dashboard(request, user):
-    all_items = list_all_items_by_user(request.user)
-    percent_storage = storage(request.user)
-    return render(request, 'dashboard.html', {'all_items' : all_items, 'percent_storage': percent_storage})
+    return render(request, 'dashboard.html', {})
 
 def upload(request):
+    s3 = login_aws()  
     if request.method == 'POST':
         upload_form = UploadForm(data=request.POST, files=request.FILES)
         if upload_form.is_valid():
             cd = upload_form.cleaned_data
             file = cd['file']
-            s3 = login_aws()  
             validate = validate_limit_storage(user=request.user, file=file.size)
             if validate == True:
-                s3.upload_fileobj(file, 'projeto-drive', f'{request.user}/{file}')
+                upload_file(file, f'{request.user}/{file}')
                 messages.success(request, 'Arquivo salvo com sucesso')
+                return redirect('drive:dashboard',  user=request.user)
             else:
                 messages.error(request, 'Limite de armazenamento excedido')
                 return redirect('drive:dashboard',  user=request.user)
-            return redirect('drive:dashboard',  user=request.user)
+
+        return render(request, 'upload.html', {'upload_form' : upload_form})
     else:
         upload_form = UploadForm()
     return render(request, 'upload.html', {'upload_form' : upload_form})
@@ -41,10 +42,15 @@ def delete_item(request, item):
         return render(request, 'delete_item.html', {'item': item})
 
 def download_item(request, item):
-    download_item_user(key=f'{request.user}/{item}', name=item)
+    url_item_download = download_item_user(key=f'{request.user}/{item}')
+    if request.method == 'POST':
+        # return redirect('drive:dashboard',  user=request.user, )
+        return render(request, 'dashboard.html', {'url_item_download':url_item_download})
+    else:
+        return render(request, 'download_item.html', {'url_item_download':url_item_download, 'item':item})
 
-    return redirect('drive:dashboard',  user=request.user)
-
+def test(request):
+    return render(request, 'test.html')
 
 
 #######################3 AUTHENTICATE #######################3
@@ -89,3 +95,9 @@ def user_register(request):
 def user_logout(request):
     logout(request)
     return redirect ('drive:login')
+
+
+
+
+
+# TODO: Completar o CRUD no delete excluir a pasta do user do bucket igual ao model Foreign Key on_delete=models.CASCADE.

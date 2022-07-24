@@ -1,0 +1,17 @@
+{% load link_download_item %}
+
+{% if links %}
+
+  <h3>Arquivos:</h3>
+  {% for item, link in links.items %}
+  <li style="display: flex;"><a href="{{link}}" target="_blank">{{item}}</a>
+    <div style="margin: 0 20px;"><a href="{% url 'drive:delete_item' item %}"> Excluir </a></div>
+          <div><a href="{{link}}"> Download </a></div>
+  </li> 
+  {% endfor %}
+
+{% else %}
+
+  <h2>Nenhum item no drive</h2>
+    
+{% endif %}

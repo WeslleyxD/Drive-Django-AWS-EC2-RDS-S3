@@ -1,5 +1,3 @@
-import boto3
-from pathlib import Path
 from .login import login_aws
 from .credentials import BUCKET
 
@@ -14,9 +12,16 @@ def delete_item_user(key):
     s3.delete_object(Bucket=BUCKET, Key=key)
     return True
 
-def download_item_user(key, name):
-    path = Path.home() / "Downloads"
-    s3.download_file(Bucket=BUCKET, Key=key, Filename=f'{path}/{name}')
+def download_item_user(key):
+    generate_url_item = s3.generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket' : BUCKET,
+            'Key' : key,
+        },
+        ExpiresIn=600
+    )
+    return generate_url_item
 
 def validate_limit_storage(user, file, limit_storage=25000000):
     items = s3.list_objects(Bucket=BUCKET, Prefix=f'{user}/').get('Contents', '')
@@ -27,7 +32,7 @@ def validate_limit_storage(user, file, limit_storage=25000000):
     if storage <= limit_storage and sum_storage_now <= limit_storage:
         return True
     else:
-        return None
+        return False
 
 def storage(user, limit_storage=25000000):
     items = s3.list_objects(Bucket=BUCKET, Prefix=f'{user}/').get('Contents', '')
@@ -36,3 +41,7 @@ def storage(user, limit_storage=25000000):
     percent_storage = round((storage/limit_storage) * 100, 1)
     
     return percent_storage
+
+def upload_file(file, key):
+    s3.upload_fileobj(file, 'projeto-drive', key, ExtraArgs={"ContentType": file.content_type})
+    return True
