@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from .import views
 
 app_name = 'drive'
@@ -11,6 +11,5 @@ urlpatterns = [
     path('dashboard/<str:user>', views.dashboard, name='dashboard'),
     path('upload/', views.upload, name='upload'),
     path('delete/<str:item>', views.delete_item, name='delete_item'),
-    path('download/<str:item>', views.download_item, name='download_item'),
     path('test', views.test, name='test'),
 ]

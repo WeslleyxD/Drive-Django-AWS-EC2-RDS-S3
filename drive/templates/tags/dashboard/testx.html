@@ -1,0 +1,10 @@
+{% load link_download_item %}
+
+{% for x in attributes %}
+
+{{x|get_item:"a"}}
+{{x|get_item:"b"}}
+{{x|get_item:"c"}}
+
+
+{% endfor %}

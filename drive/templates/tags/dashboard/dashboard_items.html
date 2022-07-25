@@ -1,12 +1,12 @@
 {% load link_download_item %}
 
-{% if links %}
+{% if attributes %}
 
   <h3>Arquivos:</h3>
-  {% for item, link in links.items %}
-  <li style="display: flex;"><a href="{{link}}" target="_blank">{{item}}</a>
-    <div style="margin: 0 20px;"><a href="{% url 'drive:delete_item' item %}"> Excluir </a></div>
-          <div><a href="{{link}}"> Download </a></div>
+  {% for attribute in attributes %}
+  <li style="display: flex;"><a href="{{attribute|get_item:'url_open'}}" target="_blank">{{attribute|get_item:'item'}}</a>
+    <div style="margin: 0 20px;"><a href=""> Excluir </a></div>
+          <div><a href="{{attribute|get_item:'url_download'}}"> Download </a></div>
   </li> 
   {% endfor %}
 

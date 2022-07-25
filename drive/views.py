@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect
 from drive.forms import LoginForm, RegisterForm, UploadForm
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from s3.login import login_aws
-from s3.requests import download_item_user, delete_item_user, validate_limit_storage, upload_file
+from s3.requests import link_open_item, delete_item_user, validate_limit_storage, upload_file
 
 
 # Create your views here.
+@login_required
 def dashboard(request, user):
     return render(request, 'dashboard.html', {})
 
@@ -40,14 +42,6 @@ def delete_item(request, item):
         return redirect('drive:dashboard', user=request.user)
     else:
         return render(request, 'delete_item.html', {'item': item})
-
-def download_item(request, item):
-    url_item_download = download_item_user(key=f'{request.user}/{item}')
-    if request.method == 'POST':
-        # return redirect('drive:dashboard',  user=request.user, )
-        return render(request, 'dashboard.html', {'url_item_download':url_item_download})
-    else:
-        return render(request, 'download_item.html', {'url_item_download':url_item_download, 'item':item})
 
 def test(request):
     return render(request, 'test.html')

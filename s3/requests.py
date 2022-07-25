@@ -12,12 +12,24 @@ def delete_item_user(key):
     s3.delete_object(Bucket=BUCKET, Key=key)
     return True
 
-def download_item_user(key):
+def link_open_item(key):
     generate_url_item = s3.generate_presigned_url(
         'get_object',
         Params={
             'Bucket' : BUCKET,
             'Key' : key,
+        },
+        ExpiresIn=600
+    )
+    return generate_url_item
+
+def link_download_item(key):
+    generate_url_item = s3.generate_presigned_url(
+        'get_object',
+        Params={
+            'Bucket' : BUCKET,
+            'Key' : key,
+            'ResponseContentDisposition': 'attachment',
         },
         ExpiresIn=600
     )
@@ -38,10 +50,10 @@ def storage(user, limit_storage=25000000):
     items = s3.list_objects(Bucket=BUCKET, Prefix=f'{user}/').get('Contents', '')
     storage = sum([item['Size'] for item in items])
 
-    percent_storage = round((storage/limit_storage) * 100, 1)
-    
+    percent_storage = str(round((storage/limit_storage) * 100, 1))
     return percent_storage
 
 def upload_file(file, key):
     s3.upload_fileobj(file, 'projeto-drive', key, ExtraArgs={"ContentType": file.content_type})
     return True
+

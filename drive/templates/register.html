@@ -1,18 +1,9 @@
 {% extends 'base.html' %}
 
-{% include "messages.html" %}
+
 
 {% block content %}
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>
-                <h1>{{ message|safe }}</h1>
-            </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
+    {% include "messages.html" %}
     <h1>Create an account</h1>
     <p>Please, sign up using the following form:</p>
         <form method="post">
